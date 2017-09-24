@@ -10,6 +10,7 @@ from light_classification.tl_classifier import TLClassifier
 import tf
 import cv2
 import yaml
+import math
 
 STATE_COUNT_THRESHOLD = 3
 
@@ -101,7 +102,20 @@ class TLDetector(object):
 
         """
         #TODO implement
-        return 0
+        dist = float('inf')
+        index = 0
+        dl = lambda a, b: math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2  + (a.z-b.z)**2)
+        for index, waypoint in enumerate(self.waypoints.waypoints):
+            if self.waypoints.waypoints[index].pose.pose.position.x < pose.position.x:
+                continue
+
+            temp_dist = dl(waypoint.pose.pose.position, pose.position)
+
+            if temp_dist < dist:
+               dist = temp_dist
+               closest = index
+
+        return closest
 
 
     def project_to_image_plane(self, point_in_world):
@@ -159,6 +173,10 @@ class TLDetector(object):
         x, y = self.project_to_image_plane(light.pose.pose.position)
 
         #TODO use light location to zoom in on traffic light in image
+        USE_SIMULATOR = True
+        if USE_SIMULATOR:
+            print self.lights[0].state
+            return self.lights[0].state
 
         #Get classification
         return self.light_classifier.get_classification(cv_image)
@@ -173,13 +191,19 @@ class TLDetector(object):
 
         """
         light = None
+        car_position = None
 
         # List of positions that correspond to the line to stop in front of for a given intersection
         stop_line_positions = self.config['stop_line_positions']
-        if(self.pose):
+        if(self.pose and self.waypoints is not None):
             car_position = self.get_closest_waypoint(self.pose.pose)
 
         #TODO find the closest visible traffic light (if one exists)
+        dl = lambda a, b: math.sqrt((a[0]-b.x)**2 + (a[1]-b.y)**2)
+
+        for stp_pos in stop_line_positions:
+            temp_dist = dl(stp_pos, self.pose.pose.position)
+            print(temp_dist)
 
         if light:
             state = self.get_light_state(light)

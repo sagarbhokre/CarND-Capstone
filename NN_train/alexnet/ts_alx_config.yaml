@@ -1,0 +1,10 @@
+BATCH_SIZE: 16
+LEARNING_RATE: 0.02
+LEARNING_RATE_DECAY_RATIO: 0.5
+LEARNING_RATE_DECAY_STEP:  5 
+MOMENTUM: 0.9
+DECAY: 0.01
+NUM_EPOCHS: 20
+NESTEROV: True
+DATA_LOC: "/home/demo/SDC/T3/arvind/CarND-Capstone/ros/src/tl_detector/imgs_all"
+#DATA_LOC: "/media/demo/3030f61b-e69c-4289-8ab0-6bf354a09040/SDC/T3/Capstone/NN/output" 

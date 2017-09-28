@@ -1,0 +1,12 @@
+if you see the following error
+ValueError: Negative dimension size caused by subtracting 11 from 3 for 'Conv2D' (op: 'Conv2D') with input shapes: [?,3,227,227], [11,11,227,96].
+make sure the keras confir json ~/.keras/keras.json is set with following contents
+
+# cat ~/.keras/keras.json
+{
+    "image_dim_ordering": "th", 
+    "epsilon": 1e-07, 
+    "floatx": "float32", 
+    "backend": "theano"
+}
+

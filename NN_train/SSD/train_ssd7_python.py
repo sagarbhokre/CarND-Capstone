@@ -15,8 +15,8 @@ from ssd_batch_generator import BatchGenerator
 
 # 1: Set some necessary parameters
 
-img_height = 300 # Height of the input images
-img_width = 480 # Width of the input images
+img_height = 1200 # Height of the input images
+img_width = 1920 # Width of the input images
 img_channels = 3 # Number of color channels of the input images
 n_classes = 6 # Number of classes including the background class
 min_scale = 0.08 # The scaling factor for the smallest anchor boxes
@@ -45,12 +45,12 @@ model, predictor_sizes = build_model(image_size=(img_height, img_width, img_chan
                                       variances=variances,
                                       coords=coords,
                                       normalize_coords=normalize_coords)
-#model.load_weights('./ssd7_0_weights.h5')
+model.load_weights('./ssd7_0_weights.h5')
 #model = load_model('./ssd7_0.h5')
 
 ### Set up training
 
-batch_size = 32
+batch_size = 4
 
 # 3: Instantiate an Adam optimizer and the SSD loss function and compile the model
 
@@ -99,7 +99,7 @@ train_generator = train_dataset.generate(batch_size=batch_size,
                                          scale=(0.75, 1.3, 0.5), # Randomly scale between 0.75 and 1.3 with probability 0.5
                                          random_crop=False,
                                          crop=False,
-                                         resize=(480,300),
+                                         resize=False,
                                          gray=False,
                                          limit_boxes=True,
                                          include_thresh=0.4,
@@ -109,7 +109,7 @@ n_train_samples = train_dataset.get_n_samples()
 
 # 6: Create the validation set batch generator (if you want to use a validation dataset)
 
-val_dataset = BatchGenerator(images_path='./data/',
+val_dataset = BatchGenerator(images_path='/media/demo/3030f61b-e69c-4289-8ab0-6bf354a09040/SDC/T3/Capstone/NN/dataset/object-dataset/',
                              include_classes='all',
                              box_output_format=['class_id', 'xmin', 'xmax', 'ymin', 'ymax'])
 
@@ -126,7 +126,7 @@ val_generator = val_dataset.generate(batch_size=batch_size,
                                      scale=False,
                                      random_crop=False,
                                      crop=False,
-                                     resize=(480,300),
+                                     resize=False,
                                      gray=False,
                                      limit_boxes=True,
                                      include_thresh=0.4,

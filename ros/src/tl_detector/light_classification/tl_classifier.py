@@ -1,13 +1,26 @@
 from styx_msgs.msg import TrafficLight
-import ts_alx_net, os, cv2
+import os, cv2
 import numpy as np
+from light_classification.resnet import ResnetBuilder
+from keras import backend as K
 
+network_type = 'resnet'
+USE_NN = True#False
+imW = 227
+NUM_CLASSES = 5
 class TLClassifier(object):
     def __init__(self):
         #load classifier
-        #build NN
-        self.net = ts_alx_net.build_alexnet()
-        self.net.load_weights('light_classification/ts_alxnet_z1.h5')
+        if USE_NN:
+            #build NN
+            if network_type == 'resnet':
+                K.set_image_dim_ordering('th')
+                self.net = ResnetBuilder.build_resnet_18((3, imW, imW), NUM_CLASSES)
+            else:
+                self.net = ts_alx_net.build_alexnet()
+            
+            model_filename = 'light_classification/ts_'+network_type+'_model.h5'
+            net.load_weights(model_filename)
         pass
 
 
@@ -51,9 +64,12 @@ class TLClassifier(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        #TODO implement light color prediction
-        img = self.preprocess_image(image, True)
-        pp = self.net.predict_on_batch(img)
-        pp = list(np.squeeze(pp))
-        state = pp.index(max(pp))
-        return state #TrafficLight.UNKNOWN
+        if USE_NN:
+            #TODO implement light color prediction
+            img = self.preprocess_image(image, True)
+            pp = self.net.predict_on_batch(img)
+            pp = list(np.squeeze(pp))
+            state = pp.index(max(pp))
+            return state
+        else:
+            return TrafficLight.UNKNOWN
